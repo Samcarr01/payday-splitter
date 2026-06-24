@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Payday Splitter</title>
+<meta name="theme-color" content="#0e1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Payday">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Crect width='180' height='180' rx='40' fill='%230e1117'/%3E%3Cg transform='translate(90 92)'%3E%3Ccircle r='52' fill='none' stroke='%235b9cff' stroke-width='10' stroke-dasharray='82 245' transform='rotate(-90)'/%3E%3Ccircle r='52' fill='none' stroke='%23ff6b5e' stroke-width='10' stroke-dasharray='55 245'/%3E%3Ccircle r='52' fill='none' stroke='%23b08bff' stroke-width='10' stroke-dasharray='90 245' transform='rotate(70)'/%3E%3Ccircle r='52' fill='none' stroke='%233ddc97' stroke-width='10' stroke-dasharray='110 245' transform='rotate(135)'/%3E%3Ctext y='12' font-size='44' font-family='Arial' font-weight='bold' fill='%23eef2f8' text-anchor='middle'%3E%C2%A3%3C/text%3E%3C/g%3E%3C/svg%3E">
+<style>
+  :root{
+    color-scheme:dark;
+    --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;
+    --font-body:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --text-caption:.75rem;--text-small:.8125rem;--text-body:.9375rem;--text-lg:1.0625rem;--text-h3:1.1875rem;--text-h2:1.375rem;--text-h1:1.875rem;--text-display:2.25rem;
+    --leading-normal:1.5;--radius-sm:.5rem;--radius-md:.75rem;--radius-lg:1rem;--radius-full:9999px;
+    --fd:#5b9cff;--fd-soft:rgba(91,156,255,.16);--monzo:#ff6b5e;--monzo-soft:rgba(255,107,94,.16);
+    --plum:#b08bff;--plum-soft:rgba(176,139,255,.16);--spend:#3ddc97;--spend-soft:rgba(61,220,151,.14);
+  }
+  [data-theme="dark"]{
+    --bg:#0e1117;--bg-grad:radial-gradient(1200px 600px at 80% -10%,rgba(91,156,255,.10),transparent 60%),radial-gradient(900px 500px at -10% 10%,rgba(176,139,255,.08),transparent 55%);
+    --surface:#161b24;--surface-2:#1d2430;--surface-raised:#222b39;--text:#eef2f8;--text-muted:#9aa6b8;--text-faint:#6b7689;
+    --border:#283041;--border-subtle:#202734;--input-bg:#0f141c;--track:#222b39;--shadow-md:0 8px 24px -10px rgba(0,0,0,.7);
+    --warn:#ffb454;--warn-soft:rgba(255,180,84,.12);--danger:#ff7a6b;--danger-soft:rgba(255,122,107,.12);
+  }
+  [data-theme="light"]{
+    color-scheme:light;--bg:#f5f6f9;--bg-grad:radial-gradient(1000px 500px at 85% -10%,rgba(91,156,255,.10),transparent 60%);
+    --surface:#fff;--surface-2:#f3f5f8;--surface-raised:#fff;--text:#141b26;--text-muted:#5c6678;--text-faint:#8a93a3;
+    --border:#e4e8ee;--border-subtle:#eef1f5;--input-bg:#fff;--track:#e7ebf1;--shadow-md:0 4px 16px -8px rgba(16,24,40,.18);
+    --warn:#b5641a;--warn-soft:#fff5e6;--danger:#c0392b;--danger-soft:#fdecea;
+  }
+  *{box-sizing:border-box;}html,body{margin:0;}
+  body{font-family:var(--font-body);background:var(--bg);background-image:var(--bg-grad);background-attachment:fixed;color:var(--text);font-size:var(--text-body);line-height:var(--leading-normal);-webkit-font-smoothing:antialiased;padding:max(var(--space-5),env(safe-area-inset-top)) var(--space-4) calc(var(--space-10) + env(safe-area-inset-bottom));}
+  .wrap{max-width:840px;margin:0 auto;}
+  .top{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);margin-bottom:var(--space-5);}
+  h1{font-size:var(--text-h1);font-weight:700;letter-spacing:-.02em;margin:0;}
+  .tagline{color:var(--text-muted);font-size:var(--text-small);margin:var(--space-1) 0 0;max-width:52ch;}
+  .theme-toggle{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-full);padding:3px;gap:2px;flex:none;}
+  .theme-toggle button{border:none;background:none;color:var(--text-muted);cursor:pointer;font-size:var(--text-caption);font-weight:600;padding:6px 12px;border-radius:var(--radius-full);transition:all .2s cubic-bezier(.4,0,.2,1);}
+  .theme-toggle button[aria-pressed="true"]{background:var(--surface-raised);color:var(--text);box-shadow:var(--shadow-md);}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-5);margin-bottom:var(--space-4);box-shadow:var(--shadow-md);animation:rise .45s cubic-bezier(0,0,.2,1) both;}
+  .card:nth-child(2){animation-delay:.04s}.card:nth-child(3){animation-delay:.08s}.card:nth-child(4){animation-delay:.12s}.card:nth-child(5){animation-delay:.16s}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .card-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-4);}
+  .card-head h2{font-size:var(--text-h3);font-weight:650;margin:0;letter-spacing:-.01em;}
+  .step{color:var(--text-faint);font-variant-numeric:tabular-nums;}.hint{color:var(--text-faint);font-size:var(--text-caption);}
+  .pill{font-size:var(--text-caption);font-weight:700;padding:3px 9px;border-radius:var(--radius-full);white-space:nowrap;}
+  .pill.fd{background:var(--fd-soft);color:var(--fd);}.pill.monzo{background:var(--monzo-soft);color:var(--monzo);}.pill.plum{background:var(--plum-soft);color:var(--plum);}
+  label{font-size:var(--text-caption);color:var(--text-muted);display:block;margin-bottom:var(--space-2);font-weight:500;}
+  input[type=number],input[type=text]{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:var(--text-body);background:var(--input-bg);color:var(--text);font-family:inherit;transition:border-color .15s,box-shadow .15s;}
+  input:focus-visible,select:focus-visible{outline:none;border-color:var(--fd);box-shadow:0 0 0 3px var(--fd-soft);}
+  select{padding:8px 9px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:var(--text-small);background:var(--input-bg);color:var(--text);font-family:inherit;cursor:pointer;}
+  .pay-input{font-size:var(--text-display);font-weight:750;padding:12px 14px;letter-spacing:-.02em;}
+  .chips{display:flex;gap:var(--space-2);flex-wrap:wrap;margin-top:var(--space-3);}
+  .chip{font-size:var(--text-caption);font-weight:600;padding:6px 11px;border-radius:var(--radius-full);border:1px solid var(--border);background:var(--surface-2);color:var(--text-muted);cursor:pointer;transition:all .15s;}
+  .chip:hover{background:var(--surface-raised);color:var(--text);transform:translateY(-1px);}.chip:active{transform:scale(.96);}
+  table{width:100%;border-collapse:collapse;}
+  th{text-align:left;font-size:var(--text-caption);color:var(--text-faint);font-weight:600;padding:var(--space-1) var(--space-2);text-transform:uppercase;letter-spacing:.04em;}
+  td{padding:var(--space-2);vertical-align:middle;}th.amt,td.amt{text-align:right;}
+  .num{width:96px;text-align:right;}.pct{width:64px;text-align:right;}.row-name input{font-weight:550;}
+  tbody tr{transition:background .15s;}tbody tr:hover{background:var(--surface-2);}
+  .del{border:none;background:none;color:var(--text-faint);cursor:pointer;font-size:18px;line-height:1;padding:4px 7px;border-radius:var(--radius-sm);transition:all .15s;}
+  .del:hover{background:var(--danger-soft);color:var(--danger);}
+  .btn{font-size:var(--text-small);border:1px solid var(--border);background:var(--surface-2);color:var(--text);padding:8px 14px;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;font-family:inherit;transition:all .15s cubic-bezier(.4,0,.2,1);}
+  .btn:hover{background:var(--surface-raised);transform:translateY(-1px);}.btn:active{transform:scale(.98);}
+  .addbtn{margin-top:var(--space-3);}
+  .toolbar{display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center;margin-bottom:var(--space-4);}
+  .slider-row{display:flex;align-items:center;gap:var(--space-4);margin-top:var(--space-3);}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:var(--radius-full);background:var(--track);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--plum);border:3px solid var(--surface);box-shadow:var(--shadow-md);cursor:pointer;transition:transform .12s;}
+  input[type=range]::-webkit-slider-thumb:active{transform:scale(1.15);}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--plum);border:3px solid var(--surface);cursor:pointer;}
+  .savval{font-size:var(--text-h2);font-weight:750;font-variant-numeric:tabular-nums;color:var(--plum);min-width:96px;text-align:right;}
+  .legend{color:var(--text-muted);font-size:var(--text-caption);margin-top:var(--space-3);}.legend b{color:var(--text);}
+  .alloc{display:flex;height:14px;border-radius:var(--radius-full);overflow:hidden;background:var(--surface-2);margin:var(--space-2) 0 var(--space-3);}
+  .alloc span{display:block;height:100%;transition:width .45s cubic-bezier(.4,0,.2,1);}
+  .alloc .s-fd{background:var(--fd);}.alloc .s-monzo{background:var(--monzo);}.alloc .s-plum{background:var(--plum);}.alloc .s-spend{background:var(--spend);}
+  .keys{display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-5);}
+  .key{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-caption);color:var(--text-muted);}
+  .dot{width:9px;height:9px;border-radius:var(--radius-full);flex:none;}
+  .plan-line{display:flex;justify-content:space-between;align-items:center;padding:var(--space-3) 0;border-bottom:1px solid var(--border-subtle);}
+  .plan-line:last-of-type{border-bottom:none;}
+  .plan-line .lbl{font-weight:600;display:flex;align-items:center;gap:var(--space-3);}
+  .plan-line .money{font-variant-numeric:tabular-nums;font-weight:750;font-size:var(--text-lg);}
+  .breakdown{font-size:var(--text-caption);color:var(--text-muted);padding:var(--space-1) 0 var(--space-3) var(--space-1);}
+  .breakdown div{display:flex;justify-content:space-between;padding:2px 0;}.breakdown .m{font-variant-numeric:tabular-nums;}
+  .spend-card{background:linear-gradient(135deg,var(--spend-soft),transparent);border:1px solid var(--spend);}
+  .spend-card.neg{background:var(--danger-soft);border-color:var(--danger);}
+  .spend-card .lbl{font-size:var(--text-lg);font-weight:600;}
+  .spend-card .money{font-size:var(--text-h2);color:var(--spend);font-variant-numeric:tabular-nums;font-weight:750;}
+  .spend-card.neg .money{color:var(--danger);}
+  .footnote{color:var(--text-muted);font-size:var(--text-caption);margin:var(--space-2) 0 0;}
+  .pop{animation:pop .35s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+  .warn{color:var(--warn);font-size:var(--text-caption);margin-top:var(--space-3);background:var(--warn-soft);padding:8px 11px;border-radius:var(--radius-sm);}
+  .total-row td{border-top:1px solid var(--border);font-weight:700;padding-top:var(--space-3);}
+  .disclaimer{text-align:center;color:var(--text-faint);font-size:var(--text-caption);margin-top:var(--space-6);}
+  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--surface-raised);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-full);padding:10px 18px;font-size:var(--text-small);font-weight:600;box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:50;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  @media (max-width:620px){.pay-input{font-size:var(--text-h1);}th{font-size:10px;}.num{width:74px;}.pct{width:52px;}.savval{font-size:var(--text-h3);min-width:78px;}}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Payday Splitter</h1>
+      <p class="tagline">Type what you got paid → get the exact transfers. Nothing is saved; it always opens fresh with your usual setup.</p>
+    </div>
+    <div class="theme-toggle" role="group" aria-label="Theme">
+      <button id="btnDark" aria-pressed="true" onclick="setTheme('dark')">Dark</button>
+      <button id="btnLight" aria-pressed="false" onclick="setTheme('light')">Light</button>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn" onclick="copyPlan()">⧉ Copy transfer list</button>
+    <button class="btn" onclick="resetDefaults()">↺ Reset</button>
+  </div>
+
+  <section class="card">
+    <div class="card-head"><h2><span class="step">1 ·</span> Pay this month <span class="pill fd">into First Direct</span></h2></div>
+    <label for="pay">Amount paid into First Direct (£)</label>
+    <input class="pay-input" id="pay" type="number" step="0.01" min="0" inputmode="decimal" oninput="recalc()">
+    <div class="chips">
+      <button class="chip" onclick="bumpPay(-100)">−£100</button>
+      <button class="chip" onclick="bumpPay(-50)">−£50</button>
+      <button class="chip" onclick="bumpPay(50)">+£50</button>
+      <button class="chip" onclick="bumpPay(100)">+£100</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2><span class="step">2 ·</span> Monthly expenses</h2><span class="hint">where each is paid from</span></div>
+    <table>
+      <thead><tr><th class="row-name">Expense</th><th>Pay from / send to</th><th class="amt">Amount £</th><th class="amt">Work back £</th><th></th></tr></thead>
+      <tbody id="expBody"></tbody>
+    </table>
+    <button class="btn addbtn" onclick="addExpense()">+ Add expense</button>
+    <p class="legend"><b>Stay in FD</b> = direct debit leaves First Direct, no transfer. <b>Transfer to Monzo</b> = move it (covers Amex fuel + subscription pots).</p>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2><span class="step">3 ·</span> Savings &amp; investments <span class="pill plum">to Plum</span></h2></div>
+    <label>Drag to set how much you save this month</label>
+    <div class="slider-row">
+      <input type="range" id="savRange" min="0" max="1000" step="10" oninput="setSavTotal(this.value)">
+      <span class="savval" id="savVal">£500</span>
+    </div>
+    <table style="margin-top:var(--space-4)">
+      <thead><tr><th class="row-name">Pot</th><th class="amt">%</th><th class="amt">Amount £</th><th></th></tr></thead>
+      <tbody id="savBody"></tbody>
+      <tfoot><tr class="total-row"><td>Total</td><td class="amt" id="savPctTotal"></td><td class="amt" id="savAmtTotal"></td><td></td></tr></tfoot>
+    </table>
+    <button class="btn addbtn" onclick="addSaving()">+ Add pot</button>
+    <p class="warn" id="savWarn" style="display:none"></p>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2><span class="step">4 ·</span> Your transfer plan</h2></div>
+    <div class="alloc" id="allocBar" aria-hidden="true"><span class="s-fd"></span><span class="s-monzo"></span><span class="s-plum"></span><span class="s-spend"></span></div>
+    <div class="keys">
+      <span class="key"><span class="dot" style="background:var(--fd)"></span>FD bills</span>
+      <span class="key"><span class="dot" style="background:var(--monzo)"></span>Monzo</span>
+      <span class="key"><span class="dot" style="background:var(--plum)"></span>Plum</span>
+      <span class="key"><span class="dot" style="background:var(--spend)"></span>Spending</span>
+    </div>
+    <div style="margin-top:var(--space-4)">
+      <div class="plan-line"><span class="lbl"><span class="pill fd">FD</span> Keep in First Direct</span><span class="money" id="outFd"></span></div>
+      <div class="breakdown" id="bdFd"></div>
+      <div class="plan-line"><span class="lbl"><span class="pill monzo">Monzo</span> Transfer to Monzo</span><span class="money" id="outMonzo"></span></div>
+      <div class="breakdown" id="bdMonzo"></div>
+      <div class="plan-line"><span class="lbl"><span class="pill plum">Plum</span> Transfer to Plum</span><span class="money" id="outPlum"></span></div>
+      <div class="breakdown" id="bdPlum"></div>
+    </div>
+  </section>
+
+  <section class="card spend-card" id="spendCard">
+    <div class="plan-line" style="border:none;padding:0"><span class="lbl">💷 Left for spending</span><span class="money" id="outSpend">£0.00</span></div>
+    <p class="footnote" id="reimbNote"></p>
+  </section>
+
+  <p class="disclaimer">FD = First Direct (where you're paid). Amex spend is cleared by Monzo, so fuel sits in a Monzo pot. General budgeting tool, not financial advice.</p>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULTS={
+  pay:1486.64,
+  expenses:[
+    {name:'Phone',dest:'FD',amount:59.90,reimb:0},
+    {name:'Car tax',dest:'FD',amount:16.62,reimb:0},
+    {name:'Car insurance',dest:'FD',amount:58.54,reimb:0},
+    {name:'Jetts Gym',dest:'FD',amount:39.95,reimb:26.99},
+    {name:'Fuel (Amex pot)',dest:'Monzo',amount:120.00,reimb:0},
+    {name:'Claude',dest:'Monzo',amount:18.00,reimb:0},
+    {name:'Plum plan',dest:'Monzo',amount:2.99,reimb:0},
+    {name:'Monzo Extra plan',dest:'Monzo',amount:3.00,reimb:0},
+    {name:'ChatGPT Plus',dest:'Monzo',amount:20.00,reimb:20.00},
+    {name:'Haircut (2× £20)',dest:'Monzo',amount:40.00,reimb:0}
+  ],
+  savTotal:500,
+  savings:[{name:'LISA',pct:20},{name:'Savings 3.2% AER (1)',pct:25},{name:'Savings 3.2% AER (2)',pct:25},{name:'Global tech stocks & shares',pct:30}]
+};
+let state=JSON.parse(JSON.stringify(DEFAULTS));
+const reduced=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+function gbp(n){return '£'+(Number(n)||0).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function gbp0(n){return '£'+Math.round(Number(n)||0).toLocaleString('en-GB');}
+function esc(s){return String(s).replace(/"/g,'&quot;');}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1800);}
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('btnDark').setAttribute('aria-pressed',t==='dark');document.getElementById('btnLight').setAttribute('aria-pressed',t==='light');document.querySelector('meta[name=theme-color]').setAttribute('content',t==='dark'?'#0e1117':'#f5f6f9');}
+
+function animateMoney(el,to){
+  if(reduced){el.textContent=(to<0?'−':'')+gbp(Math.abs(to));el.dataset.val=to;return;}
+  const from=parseFloat(el.dataset.val||'0');el.dataset.val=to;const dur=420,t0=performance.now();
+  (function tick(now){const p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,3),v=from+(to-from)*e;el.textContent=(v<0?'−':'')+gbp(Math.abs(v));if(p<1)requestAnimationFrame(tick);})(t0);
+}
+function renderExpenses(){
+  const tb=document.getElementById('expBody');tb.innerHTML='';
+  state.expenses.forEach((e,i)=>{const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="row-name"><input type="text" value="${esc(e.name)}" onchange="setExp(${i},'name',this.value)"></td>
+      <td><select onchange="setExp(${i},'dest',this.value)"><option value="FD" ${e.dest==='FD'?'selected':''}>Stay in FD</option><option value="Monzo" ${e.dest==='Monzo'?'selected':''}>Transfer to Monzo</option></select></td>
+      <td class="amt"><input class="num" type="number" step="0.01" min="0" inputmode="decimal" value="${e.amount}" onchange="setExp(${i},'amount',this.value)"></td>
+      <td class="amt"><input class="num" type="number" step="0.01" min="0" inputmode="decimal" value="${e.reimb}" onchange="setExp(${i},'reimb',this.value)"></td>
+      <td><button class="del" aria-label="Remove" onclick="delExp(${i})">×</button></td>`;
+    tb.appendChild(tr);});
+}
+function renderSavings(){
+  const tb=document.getElementById('savBody');tb.innerHTML='';const total=Number(state.savTotal)||0;
+  state.savings.forEach((s,i)=>{const amt=total*(Number(s.pct)||0)/100;const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="row-name"><input type="text" value="${esc(s.name)}" onchange="setSav(${i},'name',this.value)"></td>
+      <td class="amt"><input class="pct" type="number" step="1" min="0" inputmode="decimal" value="${s.pct}" onchange="setSav(${i},'pct',this.value)"></td>
+      <td class="amt">${gbp(amt)}</td>
+      <td><button class="del" aria-label="Remove" onclick="delSav(${i})">×</button></td>`;
+    tb.appendChild(tr);});
+}
+function setExp(i,k,v){state.expenses[i][k]=(k==='name'||k==='dest')?v:(parseFloat(v)||0);recalc();}
+function setSav(i,k,v){state.savings[i][k]=(k==='name')?v:(parseFloat(v)||0);recalc();}
+function delExp(i){state.expenses.splice(i,1);renderExpenses();recalc();}
+function delSav(i){state.savings.splice(i,1);renderSavings();recalc();}
+function addExpense(){state.expenses.push({name:'New expense',dest:'Monzo',amount:0,reimb:0});renderExpenses();recalc();}
+function addSaving(){state.savings.push({name:'New pot',pct:0});renderSavings();recalc();}
+function setPay(v){state.pay=Math.max(0,v);document.getElementById('pay').value=Number(v.toFixed(2));recalc();}
+function bumpPay(d){setPay((parseFloat(document.getElementById('pay').value)||0)+d);}
+function setSavTotal(v){state.savTotal=Math.max(0,parseFloat(v)||0);document.getElementById('savVal').textContent=gbp0(state.savTotal);recalc();}
+function resetDefaults(){state=JSON.parse(JSON.stringify(DEFAULTS));syncControls();renderExpenses();renderSavings();recalc();toast('Reset to defaults');}
+function syncControls(){document.getElementById('pay').value=state.pay;const mx=Math.max(1000,Math.ceil((state.pay||1000)/100)*100);const r=document.getElementById('savRange');r.max=mx;r.value=Math.min(state.savTotal,mx);document.getElementById('savVal').textContent=gbp0(state.savTotal);}
+function compute(){
+  let fd=0,monzo=0,reimb=0;const fdItems=[],monzoItems=[];
+  state.expenses.forEach(e=>{const a=Number(e.amount)||0;reimb+=Number(e.reimb)||0;if(e.dest==='FD'){fd+=a;fdItems.push(e);}else{monzo+=a;monzoItems.push(e);}});
+  const sav=Number(state.savTotal)||0;return {fd,monzo,sav,spend:state.pay-fd-monzo-sav,reimb,fdItems,monzoItems};
+}
+function recalc(){
+  state.pay=parseFloat(document.getElementById('pay').value)||0;
+  const r=document.getElementById('savRange'),mx=Math.max(1000,Math.ceil((state.pay||1000)/100)*100);if(+r.max!==mx)r.max=mx;
+  const c=compute();
+  animateMoney(document.getElementById('outFd'),c.fd);
+  animateMoney(document.getElementById('outMonzo'),c.monzo);
+  animateMoney(document.getElementById('outPlum'),c.sav);
+  document.getElementById('bdFd').innerHTML=c.fdItems.map(e=>`<div><span>${esc(e.name)}</span><span class="m">${gbp(e.amount)}</span></div>`).join('');
+  document.getElementById('bdMonzo').innerHTML=c.monzoItems.map(e=>`<div><span>${esc(e.name)}</span><span class="m">${gbp(e.amount)}</span></div>`).join('');
+  let pctSum=0,savAmtSum=0;
+  document.getElementById('bdPlum').innerHTML=state.savings.map(s=>{const amt=c.sav*(Number(s.pct)||0)/100;savAmtSum+=amt;pctSum+=Number(s.pct)||0;return `<div><span>${esc(s.name)} (${Number(s.pct)||0}%)</span><span class="m">${gbp(amt)}</span></div>`;}).join('');
+  renderSavings();
+  document.getElementById('savPctTotal').textContent=pctSum+'%';
+  document.getElementById('savAmtTotal').textContent=gbp(savAmtSum);
+  const sw=document.getElementById('savWarn');
+  if(Math.round(pctSum)!==100){sw.style.display='block';sw.textContent=`⚠ Pot percentages add up to ${pctSum}% (should be 100%). Amounts scale to whatever you set.`;}else sw.style.display='none';
+  const base=state.pay>0?state.pay:1,seg=v=>Math.max(0,Math.min(100,v/base*100)),bar=document.getElementById('allocBar').children;
+  bar[0].style.width=seg(c.fd)+'%';bar[1].style.width=seg(c.monzo)+'%';bar[2].style.width=seg(c.sav)+'%';bar[3].style.width=seg(Math.max(0,c.spend))+'%';
+  const card=document.getElementById('spendCard');card.classList.toggle('neg',c.spend<0);
+  const sp=document.getElementById('outSpend');animateMoney(sp,c.spend);
+  if(!reduced){sp.classList.remove('pop');void sp.offsetWidth;sp.classList.add('pop');}
+  const rn=document.getElementById('reimbNote');
+  if(c.spend<0)rn.innerHTML=`<b>Short by ${gbp(Math.abs(c.spend))}</b> — pay doesn't cover bills + savings. Lower savings or trim an expense.`;
+  else rn.innerHTML=c.reimb>0?`Work reimburses <b>${gbp(c.reimb)}</b> separately, so real spending power is about <b>${gbp(c.spend+c.reimb)}</b> once that lands.`:'';
+}
+function copyPlan(){
+  const c=compute();
+  const lines=[`Payday plan — pay ${gbp(state.pay)}`,`• Keep in First Direct: ${gbp(c.fd)}`,`• Transfer to Monzo: ${gbp(c.monzo)}`,`• Transfer to Plum: ${gbp(c.sav)}`,`• Spending: ${gbp(c.spend)}`].join('\n');
+  navigator.clipboard?.writeText(lines).then(()=>toast('Transfer list copied ✓'),()=>toast('Copy failed'));
+}
+syncControls();renderExpenses();renderSavings();recalc();
+</script>
+</body>
+</html>
