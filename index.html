@@ -61,7 +61,7 @@
   table{width:100%;border-collapse:collapse;}
   th{text-align:left;font-size:var(--text-caption);color:var(--text-faint);font-weight:600;padding:var(--space-1) var(--space-2);text-transform:uppercase;letter-spacing:.04em;}
   td{padding:var(--space-2);vertical-align:middle;}th.amt,td.amt{text-align:right;}
-  .num{max-width:104px;text-align:right;}.pct{max-width:74px;text-align:right;}.row-name input{font-weight:550;}
+  .num{max-width:120px;text-align:right;}.row-name input{font-weight:550;}
   tbody tr{transition:background .15s;}tbody tr:hover{background:var(--surface-2);}
   .del{border:none;background:none;color:var(--text-faint);cursor:pointer;font-size:20px;line-height:1;padding:6px 9px;border-radius:var(--radius-sm);transition:all .15s;}
   .del:hover{background:var(--danger-soft);color:var(--danger);}
@@ -71,12 +71,6 @@
   .toolbar{display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center;margin-bottom:var(--space-4);}
   .saved{color:var(--spend);font-size:var(--text-caption);font-weight:600;opacity:0;transition:opacity .25s;}
   .saved.show{opacity:1;}
-  .slider-row{display:flex;align-items:center;gap:var(--space-4);margin-top:var(--space-3);}
-  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:var(--radius-full);background:var(--track);outline:none;padding:0;}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--plum);border:3px solid var(--surface);box-shadow:var(--shadow-md);cursor:pointer;transition:transform .12s;}
-  input[type=range]::-webkit-slider-thumb:active{transform:scale(1.15);}
-  input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--plum);border:3px solid var(--surface);cursor:pointer;}
-  .savval{font-size:var(--text-h2);font-weight:750;font-variant-numeric:tabular-nums;color:var(--plum);min-width:96px;text-align:right;}
   .legend{color:var(--text-muted);font-size:var(--text-caption);margin-top:var(--space-3);}.legend b{color:var(--text);}
   .alloc{display:flex;height:14px;border-radius:var(--radius-full);overflow:hidden;background:var(--surface-2);margin:var(--space-2) 0 var(--space-3);}
   .alloc span{display:block;height:100%;transition:width .45s cubic-bezier(.4,0,.2,1);}
@@ -98,7 +92,6 @@
   .footnote{color:var(--text-muted);font-size:var(--text-caption);margin:var(--space-2) 0 0;}
   .pop{animation:pop .35s cubic-bezier(.34,1.56,.64,1);}
   @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
-  .warn{color:var(--warn);font-size:var(--text-caption);margin-top:var(--space-3);background:var(--warn-soft);padding:8px 11px;border-radius:var(--radius-sm);}
   .total-row td{border-top:1px solid var(--border);font-weight:700;padding-top:var(--space-3);}
   .disclaimer{text-align:center;color:var(--text-faint);font-size:var(--text-caption);margin-top:var(--space-6);}
   .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--surface-raised);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-full);padding:10px 18px;font-size:var(--text-small);font-weight:600;box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:50;}
@@ -108,7 +101,6 @@
   @media (max-width:620px){
     body{padding-left:var(--space-3);padding-right:var(--space-3);}
     .pay-input{font-size:var(--text-h1);}
-    .savval{font-size:var(--text-h3);min-width:auto;}
     .card table,.card table tbody,.card table tfoot,.card table tr,.card table td{display:block;width:100%;}
     .card table thead{position:absolute;left:-9999px;top:-9999px;}
     #expBody tr,#savBody tr{border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface-2);padding:var(--space-3);margin-bottom:var(--space-3);}
@@ -171,19 +163,13 @@
   </section>
 
   <section class="card">
-    <div class="card-head"><h2><span class="step">3 ·</span> Savings &amp; investments <span class="pill plum">to Plum</span></h2></div>
-    <label>Drag to set how much you save this month</label>
-    <div class="slider-row">
-      <input type="range" id="savRange" min="0" max="1000" step="10" oninput="setSavTotal(this.value)">
-      <span class="savval" id="savVal">£500</span>
-    </div>
-    <table style="margin-top:var(--space-4)">
-      <thead><tr><th class="row-name">Pot</th><th class="amt">%</th><th class="amt">Amount £</th><th></th></tr></thead>
+    <div class="card-head"><h2><span class="step">3 ·</span> Savings &amp; investments <span class="pill plum">to Plum</span></h2><span class="hint">type the £ for each pot</span></div>
+    <table>
+      <thead><tr><th class="row-name">Pot</th><th class="amt">Amount £</th><th></th></tr></thead>
       <tbody id="savBody"></tbody>
-      <tfoot><tr class="total-row"><td>Total</td><td class="amt" id="savPctTotal"></td><td class="amt" id="savAmtTotal"></td><td></td></tr></tfoot>
+      <tfoot><tr class="total-row"><td>Total to Plum</td><td class="amt" id="savAmtTotal"></td><td></td></tr></tfoot>
     </table>
     <button class="btn addbtn" onclick="addSaving()">+ Add pot</button>
-    <p class="warn" id="savWarn" style="display:none"></p>
   </section>
 
   <section class="card">
@@ -229,16 +215,28 @@ const DEFAULTS={
     {name:'ChatGPT Plus',dest:'Monzo',amount:20.00,reimb:20.00},
     {name:'Haircut (2× £20)',dest:'Monzo',amount:40.00,reimb:0}
   ],
-  savTotal:500,
-  savings:[{name:'LISA',pct:20},{name:'Savings 3.2% AER (1)',pct:25},{name:'Savings 3.2% AER (2)',pct:25},{name:'Global tech stocks & shares',pct:30}]
+  savings:[
+    {name:'LISA',amount:100},
+    {name:'Savings 3.2% AER (1)',amount:125},
+    {name:'Savings 3.2% AER (2)',amount:125},
+    {name:'Global tech stocks & shares',amount:150}
+  ]
 };
 const SKEY='pds-state-v2',TKEY='pds-theme-v2';
-function loadState(){try{const s=JSON.parse(localStorage.getItem(SKEY));if(s&&Array.isArray(s.expenses)&&Array.isArray(s.savings))return s;}catch(e){}return JSON.parse(JSON.stringify(DEFAULTS));}
+function migrate(s){
+  // convert old percentage-based pots to £ amounts
+  if(s&&Array.isArray(s.savings)){
+    const tot=Number(s.savTotal)||0;
+    s.savings=s.savings.map(p=>('amount' in p)?{name:p.name,amount:Number(p.amount)||0}:{name:p.name,amount:tot*(Number(p.pct)||0)/100});
+    delete s.savTotal;
+  }
+  return s;
+}
+function loadState(){try{const s=JSON.parse(localStorage.getItem(SKEY));if(s&&Array.isArray(s.expenses)&&Array.isArray(s.savings))return migrate(s);}catch(e){}return JSON.parse(JSON.stringify(DEFAULTS));}
 let state=loadState();
 function saveState(){try{localStorage.setItem(SKEY,JSON.stringify(state));const n=document.getElementById('saved');if(n){n.classList.add('show');clearTimeout(window._sv);window._sv=setTimeout(()=>n.classList.remove('show'),1000);}}catch(e){}}
 const reduced=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
 function gbp(n){return '£'+(Number(n)||0).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function gbp0(n){return '£'+Math.round(Number(n)||0).toLocaleString('en-GB');}
 function esc(s){return String(s).replace(/"/g,'&quot;');}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1800);}
 function setTheme(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('btnDark').setAttribute('aria-pressed',t==='dark');document.getElementById('btnLight').setAttribute('aria-pressed',t==='light');document.querySelector('meta[name=theme-color]').setAttribute('content',t==='dark'?'#0e1117':'#f5f6f9');try{localStorage.setItem(TKEY,t);}catch(e){}}
@@ -259,11 +257,10 @@ function renderExpenses(){
     tb.appendChild(tr);});
 }
 function renderSavings(){
-  const tb=document.getElementById('savBody');tb.innerHTML='';const total=Number(state.savTotal)||0;
-  state.savings.forEach((s,i)=>{const amt=total*(Number(s.pct)||0)/100;const tr=document.createElement('tr');
+  const tb=document.getElementById('savBody');tb.innerHTML='';
+  state.savings.forEach((s,i)=>{const tr=document.createElement('tr');
     tr.innerHTML=`<td class="row-name"><input type="text" value="${esc(s.name)}" onchange="setSav(${i},'name',this.value)"></td>
-      <td class="amt" data-label="%"><input class="pct" type="number" step="1" min="0" inputmode="decimal" value="${s.pct}" onchange="setSav(${i},'pct',this.value)"></td>
-      <td class="amt" data-label="Amount £">${gbp(amt)}</td>
+      <td class="amt" data-label="Amount £"><input class="num" type="number" step="0.01" min="0" inputmode="decimal" value="${s.amount}" onchange="setSav(${i},'amount',this.value)"></td>
       <td class="del-cell"><button class="del" aria-label="Remove ${esc(s.name)}" onclick="delSav(${i})">×</button></td>`;
     tb.appendChild(tr);});
 }
@@ -272,33 +269,27 @@ function setSav(i,k,v){state.savings[i][k]=(k==='name')?v:(parseFloat(v)||0);rec
 function delExp(i){state.expenses.splice(i,1);renderExpenses();recalc();}
 function delSav(i){state.savings.splice(i,1);renderSavings();recalc();}
 function addExpense(){state.expenses.push({name:'New expense',dest:'Monzo',amount:0,reimb:0});renderExpenses();recalc();}
-function addSaving(){state.savings.push({name:'New pot',pct:0});renderSavings();recalc();}
+function addSaving(){state.savings.push({name:'New pot',amount:0});renderSavings();recalc();}
 function setPay(v){state.pay=Math.max(0,v);document.getElementById('pay').value=Number(v.toFixed(2));recalc();}
 function bumpPay(d){setPay((parseFloat(document.getElementById('pay').value)||0)+d);}
-function setSavTotal(v){state.savTotal=Math.max(0,parseFloat(v)||0);document.getElementById('savVal').textContent=gbp0(state.savTotal);recalc();}
 function resetDefaults(){if(!confirm('Reset everything back to the default setup? This clears your saved changes on this device.'))return;state=JSON.parse(JSON.stringify(DEFAULTS));syncControls();renderExpenses();renderSavings();recalc();toast('Reset to defaults');}
-function syncControls(){document.getElementById('pay').value=state.pay;const mx=Math.max(1000,Math.ceil((state.pay||1000)/100)*100);const r=document.getElementById('savRange');r.max=mx;r.value=Math.min(state.savTotal,mx);document.getElementById('savVal').textContent=gbp0(state.savTotal);}
+function syncControls(){document.getElementById('pay').value=state.pay;}
 function compute(){
   let fd=0,monzo=0,reimb=0;const fdItems=[],monzoItems=[];
   state.expenses.forEach(e=>{const a=Number(e.amount)||0;reimb+=Number(e.reimb)||0;if(e.dest==='FD'){fd+=a;fdItems.push(e);}else{monzo+=a;monzoItems.push(e);}});
-  const sav=Number(state.savTotal)||0;return {fd,monzo,sav,spend:state.pay-fd-monzo-sav,reimb,fdItems,monzoItems};
+  const sav=state.savings.reduce((t,s)=>t+(Number(s.amount)||0),0);
+  return {fd,monzo,sav,spend:state.pay-fd-monzo-sav,reimb,fdItems,monzoItems};
 }
 function recalc(){
   state.pay=parseFloat(document.getElementById('pay').value)||0;
-  const r=document.getElementById('savRange'),mx=Math.max(1000,Math.ceil((state.pay||1000)/100)*100);if(+r.max!==mx)r.max=mx;
   const c=compute();
   animateMoney(document.getElementById('outFd'),c.fd);
   animateMoney(document.getElementById('outMonzo'),c.monzo);
   animateMoney(document.getElementById('outPlum'),c.sav);
   document.getElementById('bdFd').innerHTML=c.fdItems.map(e=>`<div><span>${esc(e.name)}</span><span class="m">${gbp(e.amount)}</span></div>`).join('');
   document.getElementById('bdMonzo').innerHTML=c.monzoItems.map(e=>`<div><span>${esc(e.name)}</span><span class="m">${gbp(e.amount)}</span></div>`).join('');
-  let pctSum=0,savAmtSum=0;
-  document.getElementById('bdPlum').innerHTML=state.savings.map(s=>{const amt=c.sav*(Number(s.pct)||0)/100;savAmtSum+=amt;pctSum+=Number(s.pct)||0;return `<div><span>${esc(s.name)} (${Number(s.pct)||0}%)</span><span class="m">${gbp(amt)}</span></div>`;}).join('');
-  renderSavings();
-  document.getElementById('savPctTotal').textContent=pctSum+'%';
-  document.getElementById('savAmtTotal').textContent=gbp(savAmtSum);
-  const sw=document.getElementById('savWarn');
-  if(Math.round(pctSum)!==100){sw.style.display='block';sw.textContent=`⚠ Pot percentages add up to ${pctSum}% (should be 100%). Amounts scale to whatever you set.`;}else sw.style.display='none';
+  document.getElementById('bdPlum').innerHTML=state.savings.map(s=>`<div><span>${esc(s.name)}</span><span class="m">${gbp(s.amount)}</span></div>`).join('');
+  document.getElementById('savAmtTotal').textContent=gbp(c.sav);
   const base=state.pay>0?state.pay:1,seg=v=>Math.max(0,Math.min(100,v/base*100)),bar=document.getElementById('allocBar').children;
   bar[0].style.width=seg(c.fd)+'%';bar[1].style.width=seg(c.monzo)+'%';bar[2].style.width=seg(c.sav)+'%';bar[3].style.width=seg(Math.max(0,c.spend))+'%';
   const card=document.getElementById('spendCard');card.classList.toggle('neg',c.spend<0);
