@@ -69,6 +69,8 @@
   .btn:hover{background:var(--surface-raised);transform:translateY(-1px);}.btn:active{transform:scale(.98);}
   .addbtn{margin-top:var(--space-3);}
   .toolbar{display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center;margin-bottom:var(--space-4);}
+  .saved{color:var(--spend);font-size:var(--text-caption);font-weight:600;opacity:0;transition:opacity .25s;}
+  .saved.show{opacity:1;}
   .slider-row{display:flex;align-items:center;gap:var(--space-4);margin-top:var(--space-3);}
   input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:var(--radius-full);background:var(--track);outline:none;padding:0;}
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--plum);border:3px solid var(--surface);box-shadow:var(--shadow-md);cursor:pointer;transition:transform .12s;}
@@ -132,7 +134,7 @@
   <header class="top">
     <div>
       <h1>Payday Splitter</h1>
-      <p class="tagline">Type what you got paid → get the exact transfers. Nothing is saved; it always opens fresh with your usual setup.</p>
+      <p class="tagline">Type what you got paid → get the exact transfers. Your expenses &amp; savings are saved on this device for next time.</p>
     </div>
     <div class="theme-toggle" role="group" aria-label="Theme">
       <button id="btnDark" aria-pressed="true" onclick="setTheme('dark')">Dark</button>
@@ -142,7 +144,8 @@
 
   <div class="toolbar">
     <button class="btn" onclick="copyPlan()">⧉ Copy transfer list</button>
-    <button class="btn" onclick="resetDefaults()">↺ Reset</button>
+    <button class="btn" onclick="resetDefaults()">↺ Reset to defaults</button>
+    <span class="saved" id="saved">Saved ✓</span>
   </div>
 
   <section class="card">
@@ -229,13 +232,16 @@ const DEFAULTS={
   savTotal:500,
   savings:[{name:'LISA',pct:20},{name:'Savings 3.2% AER (1)',pct:25},{name:'Savings 3.2% AER (2)',pct:25},{name:'Global tech stocks & shares',pct:30}]
 };
-let state=JSON.parse(JSON.stringify(DEFAULTS));
+const SKEY='pds-state-v2',TKEY='pds-theme-v2';
+function loadState(){try{const s=JSON.parse(localStorage.getItem(SKEY));if(s&&Array.isArray(s.expenses)&&Array.isArray(s.savings))return s;}catch(e){}return JSON.parse(JSON.stringify(DEFAULTS));}
+let state=loadState();
+function saveState(){try{localStorage.setItem(SKEY,JSON.stringify(state));const n=document.getElementById('saved');if(n){n.classList.add('show');clearTimeout(window._sv);window._sv=setTimeout(()=>n.classList.remove('show'),1000);}}catch(e){}}
 const reduced=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
 function gbp(n){return '£'+(Number(n)||0).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function gbp0(n){return '£'+Math.round(Number(n)||0).toLocaleString('en-GB');}
 function esc(s){return String(s).replace(/"/g,'&quot;');}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),1800);}
-function setTheme(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('btnDark').setAttribute('aria-pressed',t==='dark');document.getElementById('btnLight').setAttribute('aria-pressed',t==='light');document.querySelector('meta[name=theme-color]').setAttribute('content',t==='dark'?'#0e1117':'#f5f6f9');}
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('btnDark').setAttribute('aria-pressed',t==='dark');document.getElementById('btnLight').setAttribute('aria-pressed',t==='light');document.querySelector('meta[name=theme-color]').setAttribute('content',t==='dark'?'#0e1117':'#f5f6f9');try{localStorage.setItem(TKEY,t);}catch(e){}}
 
 function animateMoney(el,to){
   if(reduced){el.textContent=(to<0?'−':'')+gbp(Math.abs(to));el.dataset.val=to;return;}
@@ -270,7 +276,7 @@ function addSaving(){state.savings.push({name:'New pot',pct:0});renderSavings();
 function setPay(v){state.pay=Math.max(0,v);document.getElementById('pay').value=Number(v.toFixed(2));recalc();}
 function bumpPay(d){setPay((parseFloat(document.getElementById('pay').value)||0)+d);}
 function setSavTotal(v){state.savTotal=Math.max(0,parseFloat(v)||0);document.getElementById('savVal').textContent=gbp0(state.savTotal);recalc();}
-function resetDefaults(){state=JSON.parse(JSON.stringify(DEFAULTS));syncControls();renderExpenses();renderSavings();recalc();toast('Reset to defaults');}
+function resetDefaults(){if(!confirm('Reset everything back to the default setup? This clears your saved changes on this device.'))return;state=JSON.parse(JSON.stringify(DEFAULTS));syncControls();renderExpenses();renderSavings();recalc();toast('Reset to defaults');}
 function syncControls(){document.getElementById('pay').value=state.pay;const mx=Math.max(1000,Math.ceil((state.pay||1000)/100)*100);const r=document.getElementById('savRange');r.max=mx;r.value=Math.min(state.savTotal,mx);document.getElementById('savVal').textContent=gbp0(state.savTotal);}
 function compute(){
   let fd=0,monzo=0,reimb=0;const fdItems=[],monzoItems=[];
@@ -301,12 +307,14 @@ function recalc(){
   const rn=document.getElementById('reimbNote');
   if(c.spend<0)rn.innerHTML=`<b>Short by ${gbp(Math.abs(c.spend))}</b> — pay doesn't cover bills + savings. Lower savings or trim an expense.`;
   else rn.innerHTML=c.reimb>0?`Work reimburses <b>${gbp(c.reimb)}</b> separately, so real spending power is about <b>${gbp(c.spend+c.reimb)}</b> once that lands.`:'';
+  saveState();
 }
 function copyPlan(){
   const c=compute();
   const lines=[`Payday plan — pay ${gbp(state.pay)}`,`• Keep in First Direct: ${gbp(c.fd)}`,`• Transfer to Monzo: ${gbp(c.monzo)}`,`• Transfer to Plum: ${gbp(c.sav)}`,`• Spending: ${gbp(c.spend)}`].join('\n');
   navigator.clipboard?.writeText(lines).then(()=>toast('Transfer list copied ✓'),()=>toast('Copy failed'));
 }
+try{const th=localStorage.getItem(TKEY);if(th)setTheme(th);}catch(e){}
 syncControls();renderExpenses();renderSavings();recalc();
 </script>
 </body>
