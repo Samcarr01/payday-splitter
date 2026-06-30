@@ -192,7 +192,7 @@
   </section>
 
   <section class="card spend-card" id="spendCard">
-    <div class="plan-line" style="border:none;padding:0"><span class="lbl">💷 Left for spending</span><span class="money" id="outSpend">£0.00</span></div>
+    <div class="plan-line" style="border:none;padding:0"><span class="lbl">💷 Free to spend <span class="hint" style="font-weight:500">(sits in Monzo)</span></span><span class="money" id="outSpend">£0.00</span></div>
     <p class="footnote" id="reimbNote"></p>
   </section>
 
@@ -283,11 +283,12 @@ function compute(){
 function recalc(){
   state.pay=parseFloat(document.getElementById('pay').value)||0;
   const c=compute();
+  const monzoMove=c.monzo+Math.max(0,c.spend); // bills/pots + spending money all go to Monzo
   animateMoney(document.getElementById('outFd'),c.fd);
-  animateMoney(document.getElementById('outMonzo'),c.monzo);
+  animateMoney(document.getElementById('outMonzo'),monzoMove);
   animateMoney(document.getElementById('outPlum'),c.sav);
   document.getElementById('bdFd').innerHTML=c.fdItems.map(e=>`<div><span>${esc(e.name)}</span><span class="m">${gbp(e.amount)}</span></div>`).join('');
-  document.getElementById('bdMonzo').innerHTML=c.monzoItems.map(e=>`<div><span>${esc(e.name)}</span><span class="m">${gbp(e.amount)}</span></div>`).join('');
+  document.getElementById('bdMonzo').innerHTML=c.monzoItems.map(e=>`<div><span>${esc(e.name)}</span><span class="m">${gbp(e.amount)}</span></div>`).join('')+(c.spend>0?`<div><span>Spending money</span><span class="m">${gbp(c.spend)}</span></div>`:'');
   document.getElementById('bdPlum').innerHTML=state.savings.map(s=>`<div><span>${esc(s.name)}</span><span class="m">${gbp(s.amount)}</span></div>`).join('');
   document.getElementById('savAmtTotal').textContent=gbp(c.sav);
   const base=state.pay>0?state.pay:1,seg=v=>Math.max(0,Math.min(100,v/base*100)),bar=document.getElementById('allocBar').children;
@@ -301,8 +302,8 @@ function recalc(){
   saveState();
 }
 function copyPlan(){
-  const c=compute();
-  const lines=[`Payday plan — pay ${gbp(state.pay)}`,`• Keep in First Direct: ${gbp(c.fd)}`,`• Transfer to Monzo: ${gbp(c.monzo)}`,`• Transfer to Plum: ${gbp(c.sav)}`,`• Spending: ${gbp(c.spend)}`].join('\n');
+  const c=compute();const monzoMove=c.monzo+Math.max(0,c.spend);
+  const lines=[`Payday plan — pay ${gbp(state.pay)}`,`• Keep in First Direct: ${gbp(c.fd)}`,`• Transfer to Monzo: ${gbp(monzoMove)} (incl. ${gbp(Math.max(0,c.spend))} spending)`,`• Transfer to Plum: ${gbp(c.sav)}`,`• Free to spend: ${gbp(c.spend)}`].join('\n');
   navigator.clipboard?.writeText(lines).then(()=>toast('Transfer list copied ✓'),()=>toast('Copy failed'));
 }
 try{const th=localStorage.getItem(TKEY);if(th)setTheme(th);}catch(e){}
